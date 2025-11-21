@@ -1,17 +1,26 @@
-CC=gcc
-CFLAGS=-I.
+CC = gcc
+CFLAGS = -Wall -Wextra -std=c99 -I.
 
-sequential_min_max : utils.o find_min_max.o utils.h find_min_max.h
-	$(CC) -o sequential_min_max find_min_max.o utils.o sequential_min_max.c $(CFLAGS)
+TARGETS = sequential_min_max parallel_min_max launcher
 
-parallel_min_max : utils.o find_min_max.o utils.h find_min_max.h
-	$(CC) -o parallel_min_max utils.o find_min_max.o parallel_min_max.c $(CFLAGS)
+all: $(TARGETS)
 
-utils.o : utils.h
-	$(CC) -o utils.o -c utils.c $(CFLAGS)
+sequential_min_max: sequential_min_max.c find_min_max.o utils.o
+	$(CC) $(CFLAGS) sequential_min_max.c find_min_max.o utils.o -o $@
 
-find_min_max.o : utils.h find_min_max.h
-	$(CC) -o find_min_max.o -c find_min_max.c $(CFLAGS)
+parallel_min_max: parallel_min_max.c find_min_max.o utils.o
+	$(CC) $(CFLAGS) parallel_min_max.c find_min_max.o utils.o -o $@
 
-clean :
-	rm utils.o find_min_max.o sequential_min_max parallel_min_max
+launcher: launcher.c
+	$(CC) $(CFLAGS) launcher.c -o launcher
+
+find_min_max.o: find_min_max.c find_min_max.h utils.h
+	$(CC) $(CFLAGS) -c find_min_max.c
+
+utils.o: utils.c utils.h
+	$(CC) $(CFLAGS) -c utils.c
+
+clean:
+	rm -f *.o $(TARGETS)
+
+.PHONY: all clean
