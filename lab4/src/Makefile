@@ -1,24 +1,19 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -std=c99
+CFLAGS = -Wall -g -pthread
 
-all: parallel_min_max zombie process_memory
+all: parallel_min_max parallel_sum process_memory zombie
 
-parallel_min_max: parallel_min_max.c find_min_max.o utils.o
-	$(CC) $(CFLAGS) $^ -o $@
+parallel_min_max: parallel_min_max.c find_min_max.c utils.c
+	$(CC) $(CFLAGS) parallel_min_max.c find_min_max.c utils.c -o parallel_min_max
 
-zombie: zombie.c
-	$(CC) $(CFLAGS) $< -o $@
+parallel_sum: parallel_sum.c utils.c
+	$(CC) $(CFLAGS) parallel_sum.c utils.c -o parallel_sum
 
 process_memory: process_memory.c
-	$(CC) $(CFLAGS) $< -o $@
+	$(CC) $(CFLAGS) process_memory.c -o process_memory
 
-find_min_max.o: find_min_max.c find_min_max.h
-	$(CC) $(CFLAGS) -c $<
-
-utils.o: utils.c utils.h
-	$(CC) $(CFLAGS) -c $<
+zombie: zombie.c
+	$(CC) $(CFLAGS) zombie.c -o zombie
 
 clean:
-	rm -f *.o parallel_min_max zombie process_memory
-
-.PHONY: all clean
+	rm -f parallel_min_max parallel_sum process_memory zombie
